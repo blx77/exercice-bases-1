@@ -67,17 +67,22 @@
 
     <!-- ACCUEIL -->
     <section id="screen-intro" class="center">
-      <div>
-        <h1 id="title" class="mega-title" aria-live="polite">Quizz 1</h1>
-        <p id="subtitle" class="mega-sub">Apprendre à utiliser l'ordinateur</p>
-        <div id="importRow" style="margin-top:18px; display:none; justify-content:center">
-          <label class="btn" for="fileImport">📁 Choisis le  questionnaire </label>
-          <input id="fileImport" type="file" accept="application/json" hidden>
+        <div>
+            <h1 id="title" class="mega-title" aria-live="polite">Quizz 1</h1>
+            <p id="subtitle" class="mega-sub">Apprendre à utiliser l'ordinateur</p>
+            <div id="importRow" style="margin-top:18px; display:none; justify-content:center">
+                <label class="btn" for="fileImport">📁 Choisis le  questionnaire </label>
+                <input id="fileImport" type="file" accept="application/json" hidden>
+            </div>
+            <!-- 2) Liste des .json hébergés sur le site -->
+            <div id="sitePicker" style="display:none; gap:10px; align-items:center">
+                <select id="siteJsonList" style="min-width:280px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,.15); background:#0f1a33; color:#e5e7eb"></select>
+                <button id="btnLoadSiteJson" class="btn">Charger (depuis le site)</button>
+            </div>
+            <div style="display:flex;justify-content:center">
+                <button id="btnStart" class="btn primary">▶️ Démarre le test</button>
+            </div>
         </div>
-        <div style="display:flex;justify-content:center">
-          <button id="btnStart" class="btn primary">▶️ Démarre le test</button>
-        </div>
-      </div>
     </section>
 
     <!-- QUIZ -->
@@ -181,6 +186,9 @@
   const victoryBlock = $('#victoryBlock');
   const victoryTitle = $('#victoryTitle');
   const regularResults = $('#regularResults');
+  const sitePicker = document.querySelector('#sitePicker');
+  const siteJsonList = document.querySelector('#siteJsonList');
+  const btnLoadSiteJson = document.querySelector('#btnLoadSiteJson');
 
   // Accueil - import local
   const importRow = $('#importRow');
@@ -323,7 +331,20 @@
       console.warn('Chargement JSON échoué:', err);
       questions = structuredClone(DEFAULT_QUESTIONS);
     }
-}
+      }
+
+  async function loadServerQuizList() {
+        try {
+            const res = await fetch('quizzes.json', { cache: 'no-store' });
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const arr = await res.json();
+            return Array.isArray(arr) ? arr : [];
+        } catch (e) {
+            console.warn('Impossible de charger quizzes.json', e);
+            return [];
+        }
+    }
+
 
 
   // ===== ADMIN / ROUTAGE
@@ -377,13 +398,56 @@
       e.target.value = '';
     }
   });
+  btnLoadSiteJson && btnLoadSiteJson.addEventListener('click', async () => {
+          const fileName = siteJsonList.value;
+          if (!fileName) {
+              alert('Choisis d\'abord un questionnaire dans la liste.');
+              return;
+          }
+          try {
+              const res = await fetch(fileName, { cache: 'no-store' });
+              if (!res.ok) throw new Error('HTTP ' + res.status);
+              const data = await res.json();
+              if (!Array.isArray(data) || data.length === 0) throw new Error('Format invalide : tableau vide ou manquant');
+
+              // Met à jour les questions + titre + paramètres persistés
+              questions = data;
+              SETTINGS.jsonName = fileName; // ex. "questions1.json"
+              saveSettings(SETTINGS);
+              applyTitle();
+
+              alert(`Questionnaire “${fileName.replace(/\.json$/i, '')}” chargé (${data.length} questions).`);
+          } catch (err) {
+              alert('Impossible de charger ce questionnaire : ' + err.message);
+          }
+      });
 
 
 
 
 // ===== INIT
   applyTitle();
-  setImportRowVisibility();
+      setImportRowVisibility();
+
+    // Si le site est servi en http(s), on tente de charger la liste des quiz dispo sur le site
+    (async () => {
+        if (location.protocol.startsWith('http')) {
+            const list = await loadServerQuizList();
+            if (list.length) {
+                // Remplir le select et afficher la section
+                siteJsonList.innerHTML = '';
+                list.forEach(name => {
+                    const opt = document.createElement('option');
+                    const base = name.replace(/\.json$/i, '');
+                    opt.value = name;
+                    opt.textContent = base;
+                    siteJsonList.appendChild(opt);
+                });
+                sitePicker.style.display = 'flex';
+            }
+        }
+    })();
+
   (async()=>{
     await tryLoadJson(SETTINGS.jsonName);
     if(isAdminRoute()) { goAdmin(); }

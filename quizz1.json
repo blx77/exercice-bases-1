@@ -1,0 +1,100 @@
+[
+  {
+    "text": "Quel est le nom de l'écran d'accueil qui s'affiche une fois que le PC a démarré ?",
+    "image": "q1.png",
+    "choices": [
+      { "label": "La fenêtre", "correct": false },
+      { "label": "Windows", "correct": false },
+      { "label": "Le Bureau", "correct": true },
+      { "label": "L'écran de démarrage",  "correct": false }
+    ]
+  },
+  {
+    "text": "Qu'est-ce que Windows?",
+    "image": "win11.png",
+    "choices": [
+      { "label": "Une marque d'ordinateur", "correct": false },
+      { "label": "Une marque d'écran", "correct": false },
+      { "label": "Un système d'exploitation", "correct": true },
+      { "label": "Un utilitaire", "correct": false }
+    ]
+  },
+    {
+    "text": "Que dois-tu faire avec la touche SHIFT (la flèche) pour écrire une lettre en majuscules ?",
+    "image": "shift.png",
+    "choices": [
+      { "label": "Taper sur SHIFT puis sur la lettre", "correct": false },
+      { "label": "Taper sur la lettre puis sur SHIFT", "correct": false },
+      { "label": "Taper deux fois sur SHIFT puis sur la lettre", "correct": false },
+      { "label": "Taper en même temps sur SHIFT et sur la lettre", "correct": true }
+    ]
+  },
+    {
+    "text": "Que faut-il pour pouvoir taper des chiffres à partir du pavé numérique",
+    "image": "chiffres.png",
+    "choices": [
+      { "label": "La touche Caps Lock doit être activée", "correct": false },
+      { "label": "La touche Num Lock (ou Verr Num) doit être activée", "correct": true },
+      { "label": "La touche Screen Lock doit être activée", "correct": false },
+      { "label": "La touche Prt Screen doit être activée", "correct": false }
+    ]
+  },
+  {
+    "text": "Qu'est-ce qu'un système d'exploitation ?",
+    "image": "interrog.png",
+    "choices": [
+      { "label": "Le programme principal qui fait fonctionner l'ordinateur", "correct": true },
+      { "label": "Un programme qui permet de naviguer sur internet", "correct": false },
+      { "label": "Un programme qui permet de taper du texte", "correct": false },
+      { "label": "Un programme qui permet d'accéder à Smartschool", "correct": false }
+    ]
+  },
+    {
+    "text": "Comment s'appelle la barre avec toutes les icônes située en dessous du Bureau?",
+    "image": "bta.png",
+    "choices": [
+      { "label": "La Barre de l'ordinateur", "correct": false },
+      { "label": "La Barre de Windows", "correct": false },
+      { "label": "La Barre des fenêtres", "correct": false },
+      { "label": "La Barre des Tâches", "correct": true }
+    ]
+  },
+    {
+    "text": "Comment s'appelle ce bouton ?",
+    "image": "win.png",
+    "choices": [
+      { "label": "Le Bouton Windows", "correct": true },
+      { "label": "Le Bouton Microsoft", "correct": false },
+      { "label": "Le Bouton des Tâches", "correct": false },
+      { "label": "Le Bouton d'allumage", "correct": false }
+    ]
+  },
+    {
+    "text": "Si tu veux utiliser un programme mais que tu ne trouves pas son icône, ou peux-tu taper son nom ? ",
+    "image": "interrog.png",
+    "choices": [
+      { "label": "Dans Bloc-Notes", "correct": false },
+      { "label": "Dans la Barre de Recherche", "correct": true },
+      { "label": "Sur le Bureau", "correct": false },
+      { "label": "Au clavier", "correct": false }
+    ]
+  },
+    {
+    "text": "Microsoft Edge est un programme qui...",
+    "image": "mse.png",
+    "choices": [
+      { "label": "...permet de naviguer sur internet", "correct": true },
+      { "label": "...permet d'écrire des lettres", "correct": false },
+      { "label": "...permet de jouer", "correct": false },
+      { "label": "...permet de faire fonctionner l'ordinateur", "correct": false }
+    ]
+  },
+    {
+    "text": "Chaque programme s'ouvre dans une fenêtre. Vrai ou Faux ?",
+    "image": "fen.png",
+    "choices": [
+      { "label": "Vrai", "correct": true },
+      { "label": "Faux", "correct": false }
+    ]
+  }
+]
