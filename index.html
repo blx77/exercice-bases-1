@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quizz</title>
+  <style>
+    :root{
+      --bg:#0f172a;--card:#111827;--muted:#94a3b8;--text:#e5e7eb;--accent:#22c55e;--danger:#ef4444;--primary:#3b82f6;--btn:#1f2937;--shadow:0 10px 25px rgba(0,0,0,.35);--radius:20px;--radius-sm:14px;--space:20px;--maxw:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:radial-gradient(1200px 600px at 50% -10%,#19213d,transparent),linear-gradient(180deg,#0b1022,#0f172a 45% 60%,#0b1022);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .wrap{max-width:var(--maxw);margin:auto;padding:24px}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.08);box-shadow:var(--shadow);border-radius:var(--radius);padding:clamp(16px,2.2vw,28px)}
+    .center{display:grid;place-items:center;min-height:70vh;text-align:center}
+    .btn{appearance:none;border:1px solid rgba(255,255,255,.15);background:var(--btn);color:var(--text);padding:16px 22px;border-radius:14px;font-weight:700;cursor:pointer;transition:.15s transform,.15s background,.15s border-color;box-shadow:0 2px 0 rgba(255,255,255,.06) inset;font-size:clamp(18px,2.2vw,24px)}
+    .btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.25)}
+    .btn.primary{background:linear-gradient(180deg,rgba(59,130,246,.22),rgba(59,130,246,.15));border-color:rgba(96,165,250,.6)}
+    .hidden{display:none!important}
+
+    /* ACCUEIL */
+    .mega-title{font-size:clamp(40px,8vw,85px);font-weight:900;line-height:1.05;margin:0}
+    .mega-sub{font-size:clamp(22px,3.8vw,42px);margin:14px 0 28px;color:var(--muted)}
+
+    /* QUIZ */
+    .quiz-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(14px,2vw,24px)}
+    @media (max-width: 900px){.quiz-grid{grid-template-columns:1fr}}
+    .q-image{width:100%;height:min(65vh,640px);border-radius:var(--radius);background:#0b1227;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;overflow:hidden}
+    .q-image img{width:100%;height:100%;object-fit:contain}
+    .badge{font-size:12px;font-weight:800;letter-spacing:.3px;padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:var(--muted)}
+    .question{font-size:clamp(22px,2.8vw,34px);font-weight:900;margin:10px 0 12px;line-height:1.1; background: linear-gradient(90deg,#22c55e,#f59e0b); -webkit-background-clip:text;background-clip:text;color:transparent}
+    .choices{display:grid;gap:12px}
+    .choice{display:flex;gap:12px;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.03));border:2px solid rgba(255,255,255,.14);border-radius:var(--radius-sm);padding:16px 18px;font-size:clamp(16px,2.1vw,20px);cursor:pointer;transition:.12s transform,.15s border-color,.15s box-shadow}
+    .choice .t{color:#fff;font-weight:600}
+    .choice:hover{transform:translateY(-1px);border-color:rgba(255,255,255,.3)}
+    .choice[aria-disabled="true"]{opacity:.55;cursor:not-allowed}
+    .choice.correct{border-color:rgba(34,197,94,1);box-shadow:0 0 0 4px rgba(34,197,94,.25)}
+    .choice.correct .t{color:#22c55e}
+    .choice.wrong{border-color:rgba(239,68,68,1);box-shadow:0 0 0 4px rgba(239,68,68,.25)}
+    .choice.wrong .t{color:#ef4444}
+
+    .footer{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px}
+    .progress{display:flex;align-items:center;gap:10px;margin:10px 0 0}
+    .bar{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+    .bar > span{display:block;height:100%;width:0;background:linear-gradient(90deg,rgba(59,130,246,.8),rgba(34,197,94,.8));transition:width .25s}
+
+    /* RÉSULTATS */
+    .victory{display:grid;gap:18px;place-items:center;text-align:center}
+    .victory h2{font-size:clamp(32px,4.5vw,56px);margin:0}
+    .victory img{width:min(100%,880px);max-height:70vh;object-fit:contain;border-radius:16px;border:1px solid rgba(255,255,255,.15);box-shadow:var(--shadow)}
+    .summary{display:grid;gap:10px;margin-top:16px}
+    .summary .row{display:flex;gap:10px;align-items:center;justify-content:space-between;border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:10px 12px;background:rgba(255,255,255,.04)}
+
+    /* ADMIN */
+    .admin{max-width:760px;margin:40px auto}
+    .admin h2{margin:0 0 14px}
+    .field{display:grid;gap:8px;margin:12px 0}
+    .field label{font-weight:700}
+    .field input{padding:12px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.15);background:#0f1a33;color:var(--text)}
+    .note{color:var(--muted);font-size:14px}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <!-- ACCUEIL -->
+    <section id="screen-intro" class="center">
+      <div>
+        <h1 id="title" class="mega-title" aria-live="polite">Quizz 1</h1>
+        <p id="subtitle" class="mega-sub">Apprendre à utiliser l'ordinateur</p>
+        <div id="importRow" style="margin-top:18px; display:none; justify-content:center">
+          <label class="btn" for="fileImport">📁 Choisis le  questionnaire </label>
+          <input id="fileImport" type="file" accept="application/json" hidden>
+        </div>
+        <div style="display:flex;justify-content:center">
+          <button id="btnStart" class="btn primary">▶️ Démarre le test</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="screen-quiz" class="card hidden" aria-live="polite">
+      <div class="quiz-grid">
+        <div>
+          <div class="badge" id="qIndex">Question 1 / 10</div>
+          <h2 id="qText" class="question">Texte de la question</h2>
+          <div id="choices" class="choices" role="listbox" aria-label="Choix de réponses"></div>
+          <div class="footer">
+            <div class="progress" style="flex:1">
+              <div class="bar" aria-hidden="true"><span id="progress"></span></div>
+              <div id="feedback" class="badge">Sélectionne une réponse</div>
+            </div>
+            <button id="btnNext" class="btn" disabled>Suivante ➜</button>
+          </div>
+        </div>
+        <figure class="q-image"><img id="qImage" alt="Illustration de la question"/></figure>
+      </div>
+    </section>
+
+    <!-- RÉSULTATS -->
+    <section id="screen-result" class="card hidden">
+      <div class="center">
+        <div>
+          <div id="victoryBlock" class="victory hidden">
+            <h2 id="victoryTitle">Quizz 1 réussi !</h2>
+            <img src="coupe.png" alt="Trophée" onerror="this.style.opacity=.2" />
+          </div>
+          <div id="regularResults">
+            <h2 class="mega-sub" style="margin-bottom:4px">Résultats</h2>
+            <p style="font-size:clamp(20px,2.4vw,28px);margin:0 0 8px"><span id="scoreText">0</span> bonne(s) réponse(s) du premier coup.</p>
+            <p id="scoreMsg" style="font-weight:800;font-size:clamp(18px,2vw,22px);margin:0 0 14px">Très bien, c'était presque parfait !</p>
+            <details style="margin-top:16px">
+              <summary>Voir le récapitulatif question par question</summary>
+              <div id="summary" class="summary"></div>
+            </details>
+          </div>
+          <div style="display:flex;gap:10px;justify-content:center;margin-top:16px">
+            <button class="btn primary" id="btnRetry">↻ Rejouer avec un nouvel ordre</button>
+            <button class="btn" id="btnHome">🏠 Retour</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN (accès via #/administrator ou ?admin=1) -->
+    <section id="screen-admin" class="card hidden">
+      <div class="admin">
+        <h2>Page administrateur</h2>
+        <p class="note">Accès « caché » : ajoutez <code>#/administrator</code> (recommandé hors‑ligne) ou <code>?admin=1</code>. Pour un vrai verrouillage, on pourra ajouter un code PIN si tu veux.</p>
+        <div class="field">
+          <label for="quizNumber">Numéro du quizz (affiché sur l'écran d'accueil et sur la coupe)</label>
+          <input id="quizNumber" type="number" min="1" step="1" placeholder="1" />
+        </div>
+        <div class="field">
+          <label for="jsonName">Nom du fichier de questions (.json)</label>
+          <input id="jsonName" placeholder="questions.json" />
+          <p class="note">En <code>file://</code>, le chargement auto peut être bloqué par le navigateur. Astuce : lancer via Live Server, ou bien utiliser un bouton d'import plus tard si on l'ajoute.</p>
+        </div>
+        <div class="row">
+          <button id="btnSaveAdmin" class="btn primary">💾 Enregistrer paramètres</button>
+          <button id="btnBackToQuiz" class="btn">⬅️ Retour</button>
+        </div>
+        <div class="field">
+          <label>
+            <input id="chkShowImport" type="checkbox" />
+            Afficher le bouton “📁 Importer un .json” sur la page d’accueil
+          </label>
+          <p class="note">Utile en mode file:// (sans Live Server). Désactivé par défaut.</p>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script>
+  // ===== UTILITAIRES
+  const $ = s => document.querySelector(s);
+  const screenIntro = $('#screen-intro');
+  const screenQuiz  = $('#screen-quiz');
+  const screenResult= $('#screen-result');
+  const screenAdmin = $('#screen-admin');
+
+  const titleEl = $('#title');
+  const subtitleEl = $('#subtitle');
+  const btnStart = $('#btnStart');
+  const btnNext  = $('#btnNext');
+  const btnRetry = $('#btnRetry');
+  const btnHome  = $('#btnHome');
+
+  const qIndexEl = $('#qIndex');
+  const qTextEl  = $('#qText');
+  const qImageEl = $('#qImage');
+  const choicesEl= $('#choices');
+  const feedbackEl=$('#feedback');
+  const progressEl=$('#progress');
+  const scoreText= $('#scoreText');
+  const scoreMsg = $('#scoreMsg');
+  const summaryEl= $('#summary');
+  const victoryBlock = $('#victoryBlock');
+  const victoryTitle = $('#victoryTitle');
+  const regularResults = $('#regularResults');
+
+  // Accueil - import local
+  const importRow = $('#importRow');
+  const fileImport = $('#fileImport');
+
+
+  // Admin fields
+  const quizNumberInput = $('#quizNumber');
+  const jsonNameInput   = $('#jsonName');
+  const btnSaveAdmin    = $('#btnSaveAdmin');
+  const btnBackToQuiz   = $('#btnBackToQuiz');
+  const chkShowImport   = $('#chkShowImport');
+
+  // ===== PARAMS PERSISTANTS (localStorage)
+  const SETTINGS_KEY = 'quiz_settings_v1';
+  function loadSettings(){
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    const def = { quizNumber: 1, jsonName: 'questions.json', showImportBtn: false };
+    if(!raw) return def;
+    try{ return { ...def, ...JSON.parse(raw) }; }catch{ return def; }
+  }
+  function saveSettings(s){ localStorage.setItem(SETTINGS_KEY, JSON.stringify(s)); }
+
+  let SETTINGS = loadSettings();
+
+  function applyTitle(){
+  const baseName = getQuizBaseName() || `Quizz ${SETTINGS.quizNumber}`;
+  titleEl.textContent = baseName;                      // titre principal = nom du fichier
+  subtitleEl.textContent = `Apprendre à utiliser l'ordinateur`;
+  }
+
+
+
+  // ===== DONNÉES PAR DÉFAUT (fallback)
+  let questions = []; // sera rempli par le JSON
+
+  // En dernier recours uniquement (si rien n’est chargé)
+  const DEFAULT_QUESTIONS = [
+    { text: "Quel est le raccourci clavier pour copier ?", image: "q1-copier.png", choices: [
+      {label:"Ctrl + C", correct:true}, {label:"Ctrl + V", correct:false}, {label:"Ctrl + X", correct:false}, {label:"Alt + C", correct:false}
+    ]},
+    { text: "Où se trouve la corbeille sous Windows ?", image: "q2-corbeille.png", choices: [
+      {label:"Sur le Bureau", correct:true}, {label:"Dans Paint", correct:false}, {label:"Dans Bloc-notes", correct:false}, {label:"Panneau > Son", correct:false}
+    ]}
+  ];
+
+  let order = [];
+  let current = 0; // index dans "order"
+  let attemptsForCurrent = 0; // nb erreurs avant bonne réponse
+  let firstTryWins = 0;
+  let perQuestion = []; // {text, firstTry:bool}
+
+  function shuffle(arr){ const a = arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} return a; }
+  function randomBravo(){ return ['Bravo !','Bien joué !','Exact !','Super !','Bonne réponse !'][Math.floor(Math.random()*5)]; }
+  function tierMessage(score,total){ const r=score/total*100; if(r===100) return 'Parfait ! 100% du premier coup, bravo !'; if(r>=70) return "Très bien, c'était presque parfait !"; if(r>=40) return 'Pas mal ! On continue les exercices.'; return 'Courage ! On révise et on réessaie.'; }
+  function escapeHtml(s){ return s.replace(/[&<>"']+/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function setImportRowVisibility(){if(importRow) importRow.style.display = SETTINGS.showImportBtn ? 'flex' : 'none';}
+  function getQuizBaseName(name = SETTINGS.jsonName){if (!name) return ''; return name.split('/').pop().replace(/\.json$/i, '');}
+
+  // ===== QUIZ
+  function startQuiz(){
+    order = shuffle([...Array(questions.length).keys()]);
+    current = 0; firstTryWins = 0; perQuestion = [];
+    screenIntro.classList.add('hidden'); screenResult.classList.add('hidden'); screenAdmin.classList.add('hidden');
+    screenQuiz.classList.remove('hidden');
+    renderCurrent();
+  }
+  function renderCurrent(){
+    const q = questions[order[current]]; attemptsForCurrent = 0;
+    qIndexEl.textContent = `Question ${current+1} / ${questions.length}`;
+    qTextEl.textContent = q.text; qImageEl.src = q.image || ''; qImageEl.style.opacity = q.image ? 1 : .2;
+    feedbackEl.textContent = 'Sélectionne une réponse'; btnNext.disabled = true;
+    choicesEl.innerHTML = '';
+    q.choices.forEach((c, idx)=>{
+      const btn = document.createElement('button');
+      btn.className='choice'; btn.type='button'; btn.setAttribute('role','option'); btn.setAttribute('aria-selected','false');
+      const span = document.createElement('span'); span.className='t'; span.textContent = `${String.fromCharCode(65+idx)}. ${c.label}`;
+      btn.appendChild(span);
+      btn.addEventListener('click', ()=>onChoice(btn,c.correct));
+      choicesEl.appendChild(btn);
+    });
+    updateProgress();
+  }
+  function onChoice(el,isCorrect){
+    if(!btnNext.disabled) return; // déjà répondu
+    if(isCorrect){
+      el.classList.add('correct'); el.setAttribute('aria-selected','true'); feedbackEl.textContent = randomBravo(); btnNext.classList.add('primary'); btnNext.disabled = false;
+      const gotFirstTry = (attemptsForCurrent===0); if(gotFirstTry) firstTryWins++; perQuestion.push({ text: questions[order[current]].text, firstTry: gotFirstTry });
+    }else{
+      el.classList.add('wrong'); el.setAttribute('aria-disabled','true'); feedbackEl.textContent='Raté, essaie un autre choix !'; attemptsForCurrent++;
+    }
+  }
+  function updateProgress(){ const pct = Math.round((current)/questions.length*100); progressEl.style.width = pct+'%'; }
+  function nextQuestion(){ btnNext.classList.remove('primary'); current++; if(current>=questions.length){ showResults(); } else { renderCurrent(); } }
+  function showResults(){
+    screenQuiz.classList.add('hidden');
+    screenResult.classList.remove('hidden');
+
+    // Score texte
+    scoreText.textContent = firstTryWins + ' / ' + questions.length;
+    scoreMsg.textContent = tierMessage(firstTryWins, questions.length);
+
+    // Récap
+    summaryEl.innerHTML = '';
+    perQuestion.forEach((p,i)=>{
+      const row=document.createElement('div'); row.className='row';
+      row.innerHTML = `<div>${i+1}. ${escapeHtml(p.text)}</div><div style="font-weight:800">${p.firstTry?'✔️ 1er coup':'✖️ après erreurs'}</div>`;
+      summaryEl.appendChild(row);
+    });
+
+    // Affichage de la coupe si score parfait du premier coup
+    if(firstTryWins === questions.length && questions.length > 0){
+      const quizLabel = getQuizBaseName() || `Quizz ${SETTINGS.quizNumber}`;
+      victoryTitle.textContent = `${quizLabel} réussi !`;
+      victoryBlock.classList.remove('hidden');
+      regularResults.classList.add('hidden');
+    } else {
+      victoryBlock.classList.add('hidden');
+      regularResults.classList.remove('hidden');
+    }
+
+    progressEl.style.width='100%';
+  }
+
+  // ===== CHARGEMENT JSON
+  async function tryLoadJson(name){
+    if(!name) return;
+    try {
+      const res = await fetch(name, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      const data = await res.json();
+      if(Array.isArray(data) && data.length){
+        questions = data;
+        console.log("Questions chargées depuis", name, data);
+      } else {
+        console.warn("Fichier JSON vide ou invalide, fallback sur DEFAULT_QUESTIONS");
+        questions = structuredClone(DEFAULT_QUESTIONS);
+      }
+    } catch(err) {
+      console.warn('Chargement JSON échoué:', err);
+      questions = structuredClone(DEFAULT_QUESTIONS);
+    }
+}
+
+
+  // ===== ADMIN / ROUTAGE
+  function isAdminRoute(){
+    const url = new URL(window.location.href);
+    return url.searchParams.get('admin')==='1' || url.hash.replace('#','')==='/administrator' || url.hash.replace('#','')==='administrator' || /\/administrator\/?$/.test(url.pathname);
+  }
+  function goAdmin(){
+    quizNumberInput.value = SETTINGS.quizNumber;
+    jsonNameInput.value = SETTINGS.jsonName;
+    screenIntro.classList.add('hidden'); screenQuiz.classList.add('hidden'); screenResult.classList.add('hidden');
+    screenAdmin.classList.remove('hidden');
+    chkShowImport.checked = !!SETTINGS.showImportBtn;
+  }
+  function goHome(){ screenAdmin.classList.add('hidden'); screenQuiz.classList.add('hidden'); screenResult.classList.add('hidden'); screenIntro.classList.remove('hidden'); }
+
+  // ===== LISTENERS
+  btnStart.addEventListener('click', startQuiz);
+  btnNext.addEventListener('click', nextQuestion);
+  btnRetry.addEventListener('click', startQuiz);
+  btnHome.addEventListener('click', goHome);
+  btnBackToQuiz.addEventListener('click', goHome);
+  btnSaveAdmin.addEventListener('click', ()=>{
+    SETTINGS.quizNumber = Math.max(1, parseInt(quizNumberInput.value||'1',10));
+    SETTINGS.jsonName   = (jsonNameInput.value||'questions.json').trim();
+    SETTINGS.showImportBtn = !!chkShowImport.checked;  // <-- ajoute cette ligne
+    saveSettings(SETTINGS);
+    applyTitle();
+    setImportRowVisibility();  // <-- et celle-ci
+    tryLoadJson(SETTINGS.jsonName);
+    alert('Paramètres enregistrés.');
+  });
+  fileImport && fileImport.addEventListener('change', async (e)=>{
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    try{
+      const text = await f.text();
+      const data = JSON.parse(text);
+      if(!Array.isArray(data) || data.length === 0) throw new Error('Format invalide : tableau vide ou manquant');
+      questions = data;
+
+      // 🔹 mettre à jour SETTINGS avec le nom du fichier importé
+      SETTINGS.jsonName = f.name;
+      saveSettings(SETTINGS);
+      applyTitle();
+
+      // alert(`Import local réussi : ${data.length} question(s).`);
+    }catch(err){
+      alert('Échec import JSON : ' + err.message);
+    }finally{
+      e.target.value = '';
+    }
+  });
+
+
+
+
+// ===== INIT
+  applyTitle();
+  setImportRowVisibility();
+  (async()=>{
+    await tryLoadJson(SETTINGS.jsonName);
+    if(isAdminRoute()) { goAdmin(); }
+  })();
+  if(isAdminRoute()) { goAdmin(); }
+  window.addEventListener('hashchange', ()=>{ if(isAdminRoute()) goAdmin(); });
+  </script>
+</body>
+</html>
